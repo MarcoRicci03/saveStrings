@@ -9,12 +9,10 @@ import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
-import org.springframework.web.bind.annotation.GetMapping;
+import java.util.LinkedHashMap;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -27,9 +25,8 @@ public class methods {
     conn = DBConnection.createNewDBconnection();
   }
 
-  @GetMapping("/register")
-  @ResponseBody
-  public Map<String, String> register(
+  @RequestMapping(value = "/register", method = RequestMethod.GET)
+  public LinkedHashMap<String, String> register(
     @RequestParam(name = "username", required = true) String username,
     @RequestParam(name = "password", required = true) String pass
   )
@@ -37,7 +34,7 @@ public class methods {
     PreparedStatement pstmt = conn.prepareStatement(
       "SELECT * FROM users WHERE username = '" + username + "'"
     );
-    HashMap<String, String> map = new HashMap<>();
+    LinkedHashMap<String, String> map = new LinkedHashMap<>();
     ResultSet r = pstmt.executeQuery();
     if (r.next()) {
       map.put("status", "error");
@@ -61,9 +58,8 @@ public class methods {
     return map;
   }
 
-  @GetMapping("/getToken")
-  @ResponseBody
-  public Map<String, String> getToken(
+  @RequestMapping(value = "/getToken", method = RequestMethod.GET)
+  public LinkedHashMap<String, String> getToken(
     @RequestParam(name = "username", required = true) String username,
     @RequestParam(name = "password", required = true) String pass
   )
@@ -71,7 +67,7 @@ public class methods {
     PreparedStatement pstmt = conn.prepareStatement(
       "SELECT * FROM users WHERE username = '" + username + "'"
     );
-    HashMap<String, String> map = new HashMap<>();
+    LinkedHashMap<String, String> map = new LinkedHashMap<>();
     ResultSet r = pstmt.executeQuery();
     if (!r.next()) {
       map.put("status", "error");
@@ -102,9 +98,8 @@ public class methods {
    * permette di ottenere la lista di tutte le key presenti nell'account relativo
    * al token 697ab188731ec4861e1eb72eca7a18d2
    */
-  @GetMapping("/getKeys")
-  @ResponseBody
-  public Map<String, Object> getKeys(
+  @RequestMapping(value = "/getKeys", method = RequestMethod.GET)
+  public LinkedHashMap<String, Object> getKeys(
     @RequestParam(name = "token", required = true) String token
   )
     throws SQLException {
@@ -114,7 +109,7 @@ public class methods {
       "'"
     );
     ResultSet r = pstmt.executeQuery();
-    HashMap<String, Object> map = new HashMap<>();
+    LinkedHashMap<String, Object> map = new LinkedHashMap<>();
     ArrayList<String> vKeys = new ArrayList<>();
     if (r.next()) {
       do {
@@ -137,15 +132,14 @@ public class methods {
    * una stringa identificata ( key ) da "IDENTIFICATIVO" e contenente
    * "HELLO_WORLD"
    */
-  @GetMapping("/setString")
-  @ResponseBody
-  public Map<String, String> setString(
+  @RequestMapping(value = "/setString", method = RequestMethod.GET)
+  public LinkedHashMap<String, String> setString(
     @RequestParam(name = "token", required = true) String token,
     @RequestParam(name = "key", required = true) String key,
     @RequestParam(name = "string", required = true) String stringa
   )
     throws SQLException {
-    HashMap<String, String> map = new HashMap<>();
+      LinkedHashMap<String, String> map = new LinkedHashMap<>();
     PreparedStatement pstmt = conn.prepareStatement(
       "SELECT id_user FROM users WHERE token ='" + token + "'"
     );
@@ -189,7 +183,6 @@ public class methods {
       map.put("status", "error");
       map.put("message", "Il token inserito non corrisponde a nessun utente.");
     }
-
     return map;
   }
 
@@ -199,28 +192,28 @@ public class methods {
    * permette di cancellare la stringa identificata dalla key "IDENTIFICATIVO"
    * presente nell'account relativo al token 697ab188731ec4861e1eb72eca7a18d2
    */
-  @GetMapping("/deleteString")
-  @ResponseBody
-  public Map<String, String> deleteString(
+  @RequestMapping(value = "/deleteString", method = RequestMethod.GET)
+  public LinkedHashMap<String, String> deleteString(
     @RequestParam(name = "token", required = true) String token,
-    @RequestParam(name = "key", required = true) Integer key
+    @RequestParam(name = "key", required = true) String key
   )
     throws SQLException {
     PreparedStatement pstmt = conn.prepareStatement(
       "SELECT keyy FROM strings INNER JOIN users ON strings.id_user = users.id_user WHERE token = '" +
       token +
-      "' AND keyy = " +
-      key
+      "' AND keyy = '" +
+      key +
+      "'"
     );
     ResultSet r = pstmt.executeQuery();
-    HashMap<String, String> map = new HashMap<>();
+    LinkedHashMap<String, String> map = new LinkedHashMap<>();
     if (r.next()) {
       pstmt =
         conn.prepareStatement(
           "DELETE strings FROM strings INNER JOIN users ON strings.id_user = users.id_user WHERE users.token = ? AND strings.keyy = ?"
         );
       pstmt.setString(1, token);
-      pstmt.setInt(2, key);
+      pstmt.setString(2, key);
       if (pstmt.executeUpdate() > 0) {
         map.put("status", "ok");
         map.put("message", "Stringa eliminata con successo.");
@@ -242,9 +235,8 @@ public class methods {
    * "IDENTIFICATIVO"
    * presente nell'account relativo al token 697ab188731ec4861e1eb72eca7a18d2
    */
-  @GetMapping("/getString")
-  @ResponseBody
-  public Map<String, String> getString(
+  @RequestMapping(value = "/getString", method = RequestMethod.GET)
+  public LinkedHashMap<String, String> getString(
     @RequestParam(name = "token", required = true) String token,
     @RequestParam(name = "key", required = true) String key
   )
@@ -252,11 +244,12 @@ public class methods {
     PreparedStatement pstmt = conn.prepareStatement(
       "SELECT * FROM strings INNER JOIN users ON strings.id_user = users.id_user WHERE token = '" +
       token +
-      "' AND keyy = " +
-      key
+      "' AND keyy = '" +
+      key +
+      "'"
     );
     ResultSet r = pstmt.executeQuery();
-    HashMap<String, String> map = new HashMap<>();
+    LinkedHashMap<String, String> map = new LinkedHashMap<>();
     if (r.next()) {
       map.put("status", "ok");
       map.put("string", r.getString("string"));
