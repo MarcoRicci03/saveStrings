@@ -86,7 +86,7 @@ public class methods {
         map.put("token", token);
       } else {
         map.put("status", "error");
-        map.put("message", "Errore nella registrazione al db");
+        map.put("message", "Errore nella login.");
       }
     }
     return map;
