@@ -10,11 +10,14 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
+
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+@CrossOrigin(origins="*")
 @RestController
 @RequestMapping("/SaveStrings")
 public class methods {
@@ -57,7 +60,7 @@ public class methods {
     }
     return map;
   }
-
+  @CrossOrigin(origins="*")
   @RequestMapping(value = "/getToken", method = RequestMethod.GET)
   public LinkedHashMap<String, String> getToken(
     @RequestParam(name = "username", required = true) String username,
