@@ -2,67 +2,86 @@
 <html lang="en">
 
 <head>
-  <meta charset="UTF-8" />
-  <script src="js/jquery-3.6.0.min.js"></script>
-  <link rel="stylesheet" href="style.css">
-  </script>
-  <script type="text/javascript" language="javascript">
-
-    /* $(document).ready(() => {
-      let url = "http://localhost:8080/SaveStrings/";
-      $("#btnLogin").click(() => {
-        //console.log(url + "getToken?username=" + $("#txtUsername").val() + "&password=" + $("#txtPassword").val());
-        $.getJSON(url + "getToken?username=" + $("#txtUsername").val() + "&password=" + $("#txtPassword").val(), function (log) {
-          $('#responseLogin').html('<p>Status: ' + log.status + '</p>');
-          $('#responseLogin').append('<p>Token : ' + log.token + '</p>');
-          if (log.status == "ok") {
-            document.getElementById("responseLogin").style.visibility = "visible"; // show
-            document.getElementById("login").style.visibility = "hidden"; // hide
-            document.getElementById("newLogin").style.visibility = "visible"; // show
-            document.getElementById("newToken").style.visibility = "visible"; // hide
-          } else {
-            document.getElementById("errorLogin").textContent = "Username o password errati."; // hide
-          }
-        });
-      })
-      $("#newToken").click(() => {
-        //console.log(url + "getToken?username=" + $("#txtUsername").val() + "&password=" + $("#txtPassword").val());
-        $.getJSON(url + "getToken?username=" + $("#txtUsername").val() + "&password=" + $("#txtPassword").val(), function (log) {
-          $('#responseLogin').html('<p>Status: ' + log.status + '</p>');
-          $('#responseLogin').append('<p>Token : ' + log.token + '</p>');
-        });
-      })
-    }) */
-  </script>
+    <meta charset="UTF-8" />
+    <script src="js/jquery-3.6.0.min.js"></script>
+    <link rel="stylesheet" href="style.css">
+    </script>
+    <script type="text/javascript" language="javascript">
+        $(document).ready(() => {
+            let url = "http://localhost:8080/SaveStrings/";
+            $("#btnLogin").click(() => {
+                //console.log(url + "getToken?username=" + $("#txtUsername").val() + "&password=" + $("#txtPassword").val());
+                $.getJSON(url + "getToken?username=" + $("#txtUsername").val() + "&password=" + $("#txtPassword").val(), function(log) {
+                    $('#responseLogin').html('<p>Status: ' + log.status + '</p>');
+                    $('#responseLogin').append('<p>Token : ' + log.token + '</p>');
+                    if (log.status == "ok") {
+                        $('#responseLogin')[0].style.visibility = "visible"; // show
+                        $('#login').hide();
+                        document.getElementById("newLogin").style.visibility = "visible"; // show
+                        document.getElementById("newToken").style.visibility = "visible"; // hide
+                    } else {
+                        document.getElementById("errorLogin").textContent = "Username o password errati."; // hide
+                    }
+                });
+            })
+            $("#newToken").click(() => {
+                //console.log(url + "getToken?username=" + $("#txtUsername").val() + "&password=" + $("#txtPassword").val());
+                $.getJSON(url + "getToken?username=" + $("#txtUsername").val() + "&password=" + $("#txtPassword").val(), function(log) {
+                    $('#responseLogin').html('<p>Status: ' + log.status + '</p>');
+                    $('#responseLogin').append('<p>Token : ' + log.token + '</p>');
+                });
+            })
+        })
+    </script>
 </head>
 
 <body>
-  <ul>
+    <!-- <ul>
     <li><a class="active" href="#home">Login-Register</a></li>
     <li><a href="#news"></a></li>
     <li><a href="#contact">Contact</a></li>
     <li><a href="#about">About</a></li>
-  </ul>
-  <!-- <div>
-    <button>Registrati</button>
-    <button onclick='document.get'>Accedi</button>
-  </div>
+  </ul> -->
+    <!-- <div>
+        <button>Registrati</button>
+        <button onclick='document.get'>Accedi</button>
+    </div> -->
 
 
 
 
-  <button id="newLogin" style="visibility: hidden;"
-    onclick='document.getElementById("login").style.visibility = "visible";'>Effettua una nuova
+    <button id="newLogin" style="visibility: hidden;">Effettua una nuova
     login.</button>
-  <button id="newToken" style="visibility: hidden;">Ottieni un nuovo token.</button>
-  <div id="login" style="visibility: hidden;">
-    <label for="txtUsername" id="lblUsername">Username: </label><input type="text" id="txtUsername">
-    <label for="txtPassword" id="lblPassword">password: </label><input type="password" id="txtPassword">
-    <button id="btnLogin">login</button>
-    <label id="errorLogin"></label>
-  </div>
-  <div id="responseLogin" style="visibility: hidden;"></div> -->
+    <button id="newToken" style="visibility: hidden;">Ottieni un nuovo token.</button>
+    <div id="login" style="visibility: visible;">
+        <label for="txtUsername" id="lblUsername">Username: </label><input type="text" id="txtUsername">
+        <label for="txtPassword" id="lblPassword">password: </label><input type="password" id="txtPassword">
+        <button id="btnLogin">login</button>
+        <label id="errorLogin"></label>
+    </div>
+    <div id="responseLogin" style="visibility: hidden;"></div>
 
+    <table>
+        <thead>
+            <th>
+                <td>Metodo</td>
+                <td>Parametri</td>
+                <td>Parametri</td>
+                <td>Parametri</td>
+                <td>Parametri</td>
+            </th>
+        </thead>
+        <tbody>
+            <tr>
+                <td>Register</td>
+                <td>Login</td>
+                <td>getToken</td>
+                <td>getString</td>
+                <td>getKeys</td>
+                <td>setString</td>
+            </tr>
+        </tbody>
+    </table>
 </body>
 
 </html>

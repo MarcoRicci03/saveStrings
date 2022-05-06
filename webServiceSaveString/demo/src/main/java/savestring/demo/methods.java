@@ -37,6 +37,7 @@ public class methods {
     PreparedStatement pstmt = conn.prepareStatement(
       "SELECT * FROM users WHERE username = '" + username + "'"
     );
+    System.out.println(pstmt.toString());
     LinkedHashMap<String, String> map = new LinkedHashMap<>();
     ResultSet r = pstmt.executeQuery();
     if (r.next()) {
