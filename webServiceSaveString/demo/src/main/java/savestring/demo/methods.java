@@ -37,7 +37,6 @@ public class methods {
     PreparedStatement pstmt = conn.prepareStatement(
       "SELECT * FROM users WHERE username = '" + username + "'"
     );
-    System.out.println(pstmt.toString());
     LinkedHashMap<String, String> map = new LinkedHashMap<>();
     ResultSet r = pstmt.executeQuery();
     if (r.next()) {
@@ -112,6 +111,7 @@ public class methods {
       token +
       "'"
     );
+    System.out.println(pstmt.toString());
     ResultSet r = pstmt.executeQuery();
     LinkedHashMap<String, Object> map = new LinkedHashMap<>();
     ArrayList<String> vKeys = new ArrayList<>();
@@ -164,11 +164,9 @@ public class methods {
           conn.prepareStatement(
             "INSERT INTO strings (id_user, string,  keyy) VALUES (?,?,?)"
           );
-        System.out.println(id_user);
         pstmt.setInt(1, id_user);
         pstmt.setString(2, stringa);
         pstmt.setString(3, key);
-        System.out.println(pstmt.toString());
         if (pstmt.executeUpdate() > 0) {
           map.put("status", "ok");
           map.put("message", "Stringa aggiunta con successo.");

@@ -9,26 +9,52 @@
     <script type="text/javascript" language="javascript">
         $(document).ready(() => {
             let url = "http://localhost:8080/SaveStrings/";
-            $("#btnLogin").click(() => {
-                //console.log(url + "getToken?username=" + $("#txtUsername").val() + "&password=" + $("#txtPassword").val());
-                $.getJSON(url + "getToken?username=" + $("#txtUsername").val() + "&password=" + $("#txtPassword").val(), function(log) {
-                    $('#responseLogin').html('<p>Status: ' + log.status + '</p>');
-                    $('#responseLogin').append('<p>Token : ' + log.token + '</p>');
+            let token;
+            //register
+            $("#btnRegister").click(() => {
+                $.getJSON(url + "register?username=" + $("#txtUsernameR").val() + "&password=" + $("#txtPasswordR").val(), function (log) {
                     if (log.status == "ok") {
-                        $('#responseLogin')[0].style.visibility = "visible"; // show
-                        $('#login').hide();
-                        document.getElementById("newLogin").style.visibility = "visible"; // show
-                        document.getElementById("newToken").style.visibility = "visible"; // hide
-                    } else {
-                        document.getElementById("errorLogin").textContent = "Username o password errati."; // hide
+                        $('#resultRegister').html('Registrato');
+                        $('#resultRegister').css('color', 'green')
+                    }
+
+                });
+            })
+            //login
+            $("#btnGetToken").click(() => {
+                $.getJSON(url + "getToken?username=" + $("#txtUsernameT").val() + "&password=" + $("#txtPasswordT").val(), function (log) {
+                    if (log.status == "ok") {
+                        $('#resultToken').append(log.token);
+                        token = log.token;
                     }
                 });
             })
-            $("#newToken").click(() => {
-                //console.log(url + "getToken?username=" + $("#txtUsername").val() + "&password=" + $("#txtPassword").val());
-                $.getJSON(url + "getToken?username=" + $("#txtUsername").val() + "&password=" + $("#txtPassword").val(), function(log) {
-                    $('#responseLogin').html('<p>Status: ' + log.status + '</p>');
-                    $('#responseLogin').append('<p>Token : ' + log.token + '</p>');
+            //getKeys
+            $("#btnGetKeys").click(() => {
+                $.getJSON(url + "getKeys?token=" + token, function (log) {
+                    $('#resultKeys').html(log.keys.join());
+                });
+            })
+            //setString
+            $("#btnSetString").click(() => {
+                $.getJSON(url + "setString?token=" + token + "&key=" + $("#txtKeyI").val() + "&string=" + $("#txtString").val(), function (log) {
+                    $('#resultSetString').html(log.message);
+                });
+            })
+            //delString
+            $("#btnDelString").click(() => {
+                $.getJSON(url + "deleteString?token=" + token + "&key=" + $("#txtKeyD").val(), function (log) {
+                    $('#resultDelString').html(log.message);
+                });
+            })
+            //getString
+            $("#btnGetString").click(() => {
+                $.getJSON(url + "getString?token=" + token + "&key=" + $("#txtKeyO").val(), function (log) {
+                    if (log.status == "ok") {
+                        $('#resultGetString').html(log.string);
+                    } else {
+                        $('#resultGetString').html(log.message);
+                    }
                 });
             })
         })
@@ -36,51 +62,57 @@
 </head>
 
 <body>
-    <!-- <ul>
-    <li><a class="active" href="#home">Login-Register</a></li>
-    <li><a href="#news"></a></li>
-    <li><a href="#contact">Contact</a></li>
-    <li><a href="#about">About</a></li>
-  </ul> -->
-    <!-- <div>
-        <button>Registrati</button>
-        <button onclick='document.get'>Accedi</button>
-    </div> -->
-
-
-
-
-    <button id="newLogin" style="visibility: hidden;">Effettua una nuova
-    login.</button>
-    <button id="newToken" style="visibility: hidden;">Ottieni un nuovo token.</button>
-    <div id="login" style="visibility: visible;">
-        <label for="txtUsername" id="lblUsername">Username: </label><input type="text" id="txtUsername">
-        <label for="txtPassword" id="lblPassword">password: </label><input type="password" id="txtPassword">
-        <button id="btnLogin">login</button>
-        <label id="errorLogin"></label>
-    </div>
-    <div id="responseLogin" style="visibility: hidden;"></div>
-
     <table>
-        <thead>
-            <th>
-                <td>Metodo</td>
-                <td>Parametri</td>
-                <td>Parametri</td>
-                <td>Parametri</td>
-                <td>Parametri</td>
-            </th>
-        </thead>
-        <tbody>
-            <tr>
-                <td>Register</td>
-                <td>Login</td>
-                <td>getToken</td>
-                <td>getString</td>
-                <td>getKeys</td>
-                <td>setString</td>
-            </tr>
-        </tbody>
+        <tr>
+            <th>Metodo</th>
+            <th>Parametro 1</th>
+            <th>Parametro 2</th>
+            <th>Invia</th>
+            <th>Risultato</th>
+        </tr>
+        <tr>
+            <td>Registrati</td>
+            <td><input type="text" id="txtUsernameR" placeholder="Username"></td>
+            <td><input type="text" id="txtPasswordR" placeholder="Password"></td>
+            <td><button id="btnRegister">Registrati</button></td>
+            <td></td><label id="resultRegister"></label></td>
+        </tr>
+        <tr>
+            <td>Ottieni il token</td>
+            <td><input type="text" id="txtUsernameT" placeholder="Username"></td>
+            <td><input type="text" id="txtPasswordT" placeholder="Password"></td>
+            <td><button id="btnGetToken">Ottieni il token</button></td>
+            <td><label id="resultToken"></label>
+            </td>
+        </tr>
+        <tr>
+            <td>Ottieni le keys di tutte le stringhe</td>
+            <td></td>
+            <td></td>
+            <td><button id="btnGetKeys">Ottieni le chiavi</button></td>
+            <td><label id="resultKeys"></label></td>
+        </tr>
+        <tr>
+            <td>Inserisci una stringa</td>
+            <td><input type="text" id="txtKeyI" placeholder="Key"></td>
+            <td><input type="text" id="txtString" placeholder="String"></td>
+            <td><button id="btnSetString">Inserisci stringa</button></td>
+            <td><label id="resultSetString"></label></td>
+        </tr>
+        <tr>
+            <td>Elimina una stringa</td>
+            <td><input type="text" id="txtKeyD" placeholder="Key"></td>
+            <td></td>
+            <td><button id="btnDelString">Inserisci stringa</button></td>
+            <td><label id="resultDelString"></label></td>
+        </tr>
+        <tr>
+            <td>Ottieni una stringa</td>
+            <td><input type="text" id="txtKeyO" placeholder="Key"></td>
+            <td></td>
+            <td><button id="btnGetString">Ottieni stringa</button></td>
+            <td><label id="resultGetString"></label></td>
+        </tr>
     </table>
 </body>
 
