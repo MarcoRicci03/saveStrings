@@ -24,15 +24,21 @@
             $("#btnGetToken").click(() => {
                 $.getJSON(url + "getToken?username=" + $("#txtUsernameT").val() + "&password=" + $("#txtPasswordT").val(), function (log) {
                     if (log.status == "ok") {
-                        $('#resultToken').append(log.token);
+                        $('#resultToken').text(log.token);
                         token = log.token;
+                    } else {
+                        $('#resultToken').text(log.message);
                     }
                 });
             })
             //getKeys
             $("#btnGetKeys").click(() => {
                 $.getJSON(url + "getKeys?token=" + token, function (log) {
-                    $('#resultKeys').html(log.keys.join());
+                    if (log.status == "ok") {
+                        $('#resultKeys').html(log.keys.join());
+                    } else {
+                        $('#resultKeys').html(log.message);
+                    }
                 });
             })
             //setString

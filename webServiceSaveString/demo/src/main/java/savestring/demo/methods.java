@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-@CrossOrigin(origins="*")
+@CrossOrigin(origins = "*")
 @RestController
 @RequestMapping("/SaveStrings")
 public class methods {
@@ -30,23 +30,19 @@ public class methods {
 
   @RequestMapping(value = "/register", method = RequestMethod.GET)
   public LinkedHashMap<String, String> register(
-    @RequestParam(name = "username", required = true) String username,
-    @RequestParam(name = "password", required = true) String pass
-  )
-    throws SQLException {
+      @RequestParam(name = "username", required = true) String username,
+      @RequestParam(name = "password", required = true) String pass)
+      throws SQLException {
     PreparedStatement pstmt = conn.prepareStatement(
-      "SELECT * FROM users WHERE username = '" + username + "'"
-    );
+        "SELECT * FROM users WHERE username = '" + username + "'");
     LinkedHashMap<String, String> map = new LinkedHashMap<>();
     ResultSet r = pstmt.executeQuery();
     if (r.next()) {
       map.put("status", "error");
       map.put("message", "Utente gia registrato");
     } else {
-      pstmt =
-        conn.prepareStatement(
-          "INSERT INTO users (username, pass, token) VALUES (?,?,?)"
-        );
+      pstmt = conn.prepareStatement(
+          "INSERT INTO users (username, pass, token) VALUES (?,?,?)");
       pstmt.setString(1, username);
       pstmt.setString(2, pass = MD5(pass));
       pstmt.setString(3, MD5(LocalDate.now().toString() + username));
@@ -60,26 +56,24 @@ public class methods {
     }
     return map;
   }
-  @CrossOrigin(origins="*")
+
+  @CrossOrigin(origins = "*")
   @RequestMapping(value = "/getToken", method = RequestMethod.GET)
-  public LinkedHashMap<String, String> getToken(
-    @RequestParam(name = "username", required = true) String username,
-    @RequestParam(name = "password", required = true) String pass
-  )
-    throws SQLException {
+  public LinkedHashMap<String, Object> getToken(
+      @RequestParam(name = "username", required = true) String username,
+      @RequestParam(name = "password", required = true) String pass)
+      throws SQLException {
     PreparedStatement pstmt = conn.prepareStatement(
-      "SELECT * FROM users WHERE username = '" + username + "'"
-    );
-    LinkedHashMap<String, String> map = new LinkedHashMap<>();
+        "SELECT * FROM users WHERE username = '" + username + "' AND pass = '" + MD5(pass) + "'");
+    LinkedHashMap<String, Object> map = new LinkedHashMap<>();
     ResultSet r = pstmt.executeQuery();
     if (!r.next()) {
       map.put("status", "error");
-      map.put("message", "Utente gia registrato");
+      map.put("message", "Utente non registrato");
+      System.out.println("errore");
     } else {
-      pstmt =
-        conn.prepareStatement(
-          "UPDATE users SET token = ? WHERE username = ? AND pass = ?"
-        );
+      pstmt = conn.prepareStatement(
+          "UPDATE users SET token = ? WHERE username = ? AND pass = ?");
       String token = MD5(LocalDateTime.now().toString() + username);
       pstmt.setString(1, token);
       pstmt.setString(2, username);
@@ -103,15 +97,12 @@ public class methods {
    */
   @RequestMapping(value = "/getKeys", method = RequestMethod.GET)
   public LinkedHashMap<String, Object> getKeys(
-    @RequestParam(name = "token", required = true) String token
-  )
-    throws SQLException {
+      @RequestParam(name = "token", required = true) String token)
+      throws SQLException {
     PreparedStatement pstmt = conn.prepareStatement(
-      "SELECT keyy FROM strings INNER JOIN users ON strings.id_user = users.id_user WHERE token = '" +
-      token +
-      "'"
-    );
-    System.out.println(pstmt.toString());
+        "SELECT keyy FROM strings INNER JOIN users ON strings.id_user = users.id_user WHERE token = '" +
+            token +
+            "'");
     ResultSet r = pstmt.executeQuery();
     LinkedHashMap<String, Object> map = new LinkedHashMap<>();
     ArrayList<String> vKeys = new ArrayList<>();
@@ -138,32 +129,26 @@ public class methods {
    */
   @RequestMapping(value = "/setString", method = RequestMethod.GET)
   public LinkedHashMap<String, String> setString(
-    @RequestParam(name = "token", required = true) String token,
-    @RequestParam(name = "key", required = true) String key,
-    @RequestParam(name = "string", required = true) String stringa
-  )
-    throws SQLException {
-      LinkedHashMap<String, String> map = new LinkedHashMap<>();
+      @RequestParam(name = "token", required = true) String token,
+      @RequestParam(name = "key", required = true) String key,
+      @RequestParam(name = "string", required = true) String stringa)
+      throws SQLException {
+    LinkedHashMap<String, String> map = new LinkedHashMap<>();
     PreparedStatement pstmt = conn.prepareStatement(
-      "SELECT id_user FROM users WHERE token ='" + token + "'"
-    );
+        "SELECT id_user FROM users WHERE token ='" + token + "'");
     ResultSet r = pstmt.executeQuery();
     if (r.next()) {
       Integer id_user = r.getInt("id_user");
-      pstmt =
-        conn.prepareStatement(
+      pstmt = conn.prepareStatement(
           "SELECT keyy FROM strings WHERE id_user =" +
-          id_user +
-          " AND keyy = '" +
-          key +
-          "'"
-        );
+              id_user +
+              " AND keyy = '" +
+              key +
+              "'");
       r = pstmt.executeQuery();
       if (!r.next()) {
-        pstmt =
-          conn.prepareStatement(
-            "INSERT INTO strings (id_user, string,  keyy) VALUES (?,?,?)"
-          );
+        pstmt = conn.prepareStatement(
+            "INSERT INTO strings (id_user, string,  keyy) VALUES (?,?,?)");
         pstmt.setInt(1, id_user);
         pstmt.setString(2, stringa);
         pstmt.setString(3, key);
@@ -177,9 +162,8 @@ public class methods {
       } else {
         map.put("status", "error");
         map.put(
-          "message",
-          "La key inserita è già assegnata a quella di un'altra stringa."
-        );
+            "message",
+            "La key inserita è già assegnata a quella di un'altra stringa.");
       }
     } else {
       map.put("status", "error");
@@ -196,24 +180,20 @@ public class methods {
    */
   @RequestMapping(value = "/deleteString", method = RequestMethod.GET)
   public LinkedHashMap<String, String> deleteString(
-    @RequestParam(name = "token", required = true) String token,
-    @RequestParam(name = "key", required = true) String key
-  )
-    throws SQLException {
+      @RequestParam(name = "token", required = true) String token,
+      @RequestParam(name = "key", required = true) String key)
+      throws SQLException {
     PreparedStatement pstmt = conn.prepareStatement(
-      "SELECT keyy FROM strings INNER JOIN users ON strings.id_user = users.id_user WHERE token = '" +
-      token +
-      "' AND keyy = '" +
-      key +
-      "'"
-    );
+        "SELECT keyy FROM strings INNER JOIN users ON strings.id_user = users.id_user WHERE token = '" +
+            token +
+            "' AND keyy = '" +
+            key +
+            "'");
     ResultSet r = pstmt.executeQuery();
     LinkedHashMap<String, String> map = new LinkedHashMap<>();
     if (r.next()) {
-      pstmt =
-        conn.prepareStatement(
-          "DELETE strings FROM strings INNER JOIN users ON strings.id_user = users.id_user WHERE users.token = ? AND strings.keyy = ?"
-        );
+      pstmt = conn.prepareStatement(
+          "DELETE strings FROM strings INNER JOIN users ON strings.id_user = users.id_user WHERE users.token = ? AND strings.keyy = ?");
       pstmt.setString(1, token);
       pstmt.setString(2, key);
       if (pstmt.executeUpdate() > 0) {
@@ -239,17 +219,15 @@ public class methods {
    */
   @RequestMapping(value = "/getString", method = RequestMethod.GET)
   public LinkedHashMap<String, String> getString(
-    @RequestParam(name = "token", required = true) String token,
-    @RequestParam(name = "key", required = true) String key
-  )
-    throws SQLException {
+      @RequestParam(name = "token", required = true) String token,
+      @RequestParam(name = "key", required = true) String key)
+      throws SQLException {
     PreparedStatement pstmt = conn.prepareStatement(
-      "SELECT * FROM strings INNER JOIN users ON strings.id_user = users.id_user WHERE token = '" +
-      token +
-      "' AND keyy = '" +
-      key +
-      "'"
-    );
+        "SELECT * FROM strings INNER JOIN users ON strings.id_user = users.id_user WHERE token = '" +
+            token +
+            "' AND keyy = '" +
+            key +
+            "'");
     ResultSet r = pstmt.executeQuery();
     LinkedHashMap<String, String> map = new LinkedHashMap<>();
     if (r.next()) {
@@ -265,17 +243,16 @@ public class methods {
   public String MD5(String md5) {
     try {
       java.security.MessageDigest md = java.security.MessageDigest.getInstance(
-        "MD5"
-      );
+          "MD5");
       byte[] array = md.digest(md5.getBytes());
       StringBuffer sb = new StringBuffer();
       for (int i = 0; i < array.length; ++i) {
         sb.append(
-          Integer.toHexString((array[i] & 0xFF) | 0x100).substring(1, 3)
-        );
+            Integer.toHexString((array[i] & 0xFF) | 0x100).substring(1, 3));
       }
       return sb.toString();
-    } catch (java.security.NoSuchAlgorithmException e) {}
+    } catch (java.security.NoSuchAlgorithmException e) {
+    }
     return null;
   }
 }
